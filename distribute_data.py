@@ -1,4 +1,3 @@
-!pip3 install ucimlrepo
 from ucimlrepo import fetch_ucirepo
 import pandas as pd
 import numpy as np
@@ -35,10 +34,8 @@ def gen_hash(gillcolor, capcolor, habitat):
   """
   new_string = f"{gillcolor}{capcolor}{habitat}"
   hash_obj = hashlib.sha256(new_string.encode())
-  hash_num = int(hash_obj.hexdigest(),16)
-  db_id = hash_num % 8
-  return db_id
-
+  hash_num = int(hash_obj.hexdigest(), 16)
+  return hash_num % len(DATABASE_URLS)
 
 def populate_dbs(row, index, db_links):
   data_json = row.to_json()
