@@ -3,7 +3,9 @@ import json
 import hashlib
 
 def fetch_attributes(url):
-    """Fetch attribute mappings from Firebase."""
+    """
+    Fetch attribute mappings from Firebase.
+    """
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
@@ -34,7 +36,9 @@ def gen_hash(gillcolor, capcolor, habitat):
     return hash_num % len(DATABASE_URLS)
 
 def prompt_for_input(attribute):
-    """prrompt user for input, showing valid options"""
+    """
+    prrompt user for input, showing valid options
+    """
     options = attributes[attribute]
     print(f"Enter {attribute} ({', '.join([f'{k}: {v}' for k, v in options.items()])}): ")
     while True:
@@ -44,7 +48,9 @@ def prompt_for_input(attribute):
         print("Invalid input, please try again.")
 
 def get_next_index():
-    """finds the highest index from all databases and returns the next available index"""
+    """
+    finds the highest index from all databases and returns the next available index
+    """
     max_index = 8123  #start from this if no higher index found
     for db_id, url in DATABASE_URLS.items():
         response = requests.get(f"{url}.json?shallow=true")
@@ -55,7 +61,9 @@ def get_next_index():
     return max_index + 1
 
 def add_data():
-    """adds new data to the appropriate database with incremental index"""
+    """
+    adds new data to the appropriate database with incremental index
+    """
     data = {attr: prompt_for_input(attr) for attr in attributes}
     db_id = gen_hash(data['gill-color'], data['cap-color'], data['habitat'])
     next_index = get_next_index()
@@ -69,6 +77,10 @@ def add_data():
 
 
 def update_data():
+    """
+    updates inputted atribute value for inputted index
+    gen_hash used as necessary to update db location for given index (transfers data to new db and then removes data from old db)
+    """
     index = input("Enter the index of the data to update: ")
     attribute = input("Enter the attribute to update: ")
     value = prompt_for_input(attribute)
@@ -86,7 +98,7 @@ def update_data():
         print("Data not found in any database.")
         return
 
-    #set the necessary value to attribute
+    #set the inputted value for inputted attribute
     existing_data[attribute] = value
 
     #determine if updated attribute affects db hash
@@ -114,28 +126,51 @@ def update_data():
 
 
 def delete_data():
-    """delete data from a specific database."""
+    """
+    delete entire index (data) from a specific database
+    asks for 2 inputs (db ID and index) to make sure user is certain about deleting data at inputted index
+    """
     db_id = int(input("Enter the database ID: "))
     index = input("Enter the index of the data to delete: ")
     url = f"{DATABASE_URLS[db_id]}/{index}.json"
     response = requests.delete(url)
     print("Data deleted, status code:", response.status_code)
 
+def read_data():
+    """
+    reads all data at inputted index
+    """
+    index = input("Enter the index of the data to retrieve: ")
+    data_found = False
+    for db_id, url in DATABASE_URLS.items():
+        response = requests.get(f"{url}/{index}.json")
+        if response.status_code == 200 and response.json() is not None:
+            data = response.json()
+            print(f"Data found in DB {db_id}:", json.dumps(data, indent=4))
+            data_found = True
+            break
+
+    if not data_found:
+        print("Data not found in databases at the specified index.")
+
 def main():
     while True:
         print("1. Add Data")
-        print("2. Update Data")
-        print("3. Delete Data")
-        print("4. Exit")
-        choice = input("Enter choice: ")
+        print("2. Read Data")
+        print("3. Update Data")
+        print("4. Delete Data")
+        print("5. Exit")           
+        choice = input("Enter your choice: ")
         
         if choice == '1':
             add_data()
         elif choice == '2':
-            update_data()
+            read_data()
         elif choice == '3':
-            delete_data()
+            update_data()
         elif choice == '4':
+            delete_data()
+        elif choice == '5':
             print("Exiting program.")
             break
         else:
@@ -143,3 +178,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
