@@ -83,7 +83,7 @@ feature_map = {
     "gill-attachment": ["attached","descending","free","notched"],
     "gill-spacing": ["lose","crowded","distant"],
     "gill-size": ["broad","narrow"],
-    "stalk-shape": ["enlarged","tapering"],
+    "stalk-shape": ["enlarging","tapering"],
     "stalk-root": ["bulbous","club","cup","equal", "rhizomorphs","rooted","missing"],
     "stalk-surface-above-ring": ["fibrous","scaly","silky","smooth"],
     "stalk-surface-below-ring": ["fibrous",'scaly',"silky","smooth"],
@@ -108,14 +108,6 @@ DATABASE_URLS = {
     7: "https://dsci551-project-af6fd-db7.firebaseio.com/",
 }
 
-# data = []
-# for url in DATABASE_URLS.values():
-#     response = requests.get(f"{url}.json")
-#     if response.status_code == 200:
-#         data.extend(response.json().values())
-#
-# dataviz_df = pd.DataFrame(data)
-
 #mapping dictionaries
 mappings = {
     'cap-shape': {"bell":"b","conical":"c","convex":"x","flat":"f","knobbed":"k","sunken":"s"},
@@ -131,6 +123,8 @@ mappings = {
     'stalk-root': {"bulbous":"b","club":"c","cup":"u","equal":"e","rhizomorphs":"r","zooted":"r","missing":"?"},
     'stalk-surface-above-ring': {"fibrous":"f","scaly":"y","silky":"k","smooth":"s"},
     'stalk-surface-below-ring': {"fibrous":"f","scaly":"y","silky":"k","smooth":"s"},
+    'stalk-color-above-ring' : {"brown":"n","buff":"b","cinnamon":"c","gray":"g","orange":"o", "pink":"p","red":"e","white":"W","yellow":"y"},
+    'stalk-color-below-ring': {"brown":"n","buff":"b","cinnamon":"c","gray":"g","orange":"o", "pink":"p","red":"e","white":"w","yellow":"y"},
     'veil-type': {"partial":"p","universal":"u"},
     'veil-color': {"brown":"n","orange":"o","white":"w","yellow":"y"},
     'ring-number': {"none":"n","one":"o","two":"t"},
@@ -210,7 +204,6 @@ def selectionPanel():
                 st.rerun()
 
 def load_df(picked_features):
-    print("inside load_df")
     if len(picked_features) >= 3:
         gillcolor = picked_features[0]
         capcolor = picked_features[1]
@@ -226,11 +219,14 @@ def load_df(picked_features):
         perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
         # st.progress(perc_edible)
         print(perc_edible)
-        slider(perc_edible)
+        st.session_state["progress_value"] = perc_edible
+        progress_value = st.session_state.get("progress_value", 0)
+        slider(progress_value)
 
     else:
         perc_edible = 0
-        progress_bar.progress(perc_edible)
+        st.session_state["progress_value"] = perc_edible
+        progress_bar.progress(progress_value)
 
     return df, perc_edible
 
@@ -301,10 +297,15 @@ def starburst():
     st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
+    if 'progress_value' not in st.session_state:
+        st.session_state['progress_value'] = 0
+
+    progress_value = st.session_state.get("progress_value", 0)
+
     charts()
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    slider(28)
+    slider(progress_value)
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     selectionPanel()
