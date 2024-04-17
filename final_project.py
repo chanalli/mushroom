@@ -209,30 +209,30 @@ def selectionPanel():
                 st.session_state["picked_features"] = picked_features
                 st.rerun()
 
-def load_df(picked_features):
-    print("inside load_df")
-    if len(picked_features) >= 3:
-        gillcolor = picked_features[0]
-        capcolor = picked_features[1]
-        habitat = picked_features[2]
-
-        db_id = gen_hash(gillcolor, capcolor, habitat)
-        db_url = DATABASE_URLS[db_id] + ".json"
-
-        response = requests.get(db_url)
-        data = response.json()
-        df = pd.DataFrame(data).transpose()
-
-        perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
-        # st.progress(perc_edible)
-        print(perc_edible)
-        slider(perc_edible)
-
-    else:
-        perc_edible = 0
-        progress_bar.progress(perc_edible)
-
-    return df, perc_edible
+# def load_df(picked_features):
+#     print("inside load_df")
+#     if len(picked_features) >= 3:
+#         gillcolor = picked_features[0]
+#         capcolor = picked_features[1]
+#         habitat = picked_features[2]
+#
+#         db_id = gen_hash(gillcolor, capcolor, habitat)
+#         db_url = DATABASE_URLS[db_id] + ".json"
+#
+#         response = requests.get(db_url)
+#         data = response.json()
+#         df = pd.DataFrame(data).transpose()
+#
+#         perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
+#         # st.progress(perc_edible)
+#         print(perc_edible)
+#         slider(perc_edible)
+#
+#     else:
+#         perc_edible = 0
+#         progress_bar.progress(perc_edible)
+#
+#     return df, perc_edible
 
 def slider(val):
     print("val for slider:", str(val))
@@ -310,7 +310,6 @@ def starburst():
     st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
-    # TODO add bar chart and pie chart before selection area
     charts()
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
