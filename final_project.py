@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import hashlib
 
 # Set page configuration
 st.set_page_config(
@@ -72,15 +73,16 @@ st.write("---")
 # Attributes of mushroom
 # used for hashing: gill, cap color, habitat
 feature_map = {
+    "gill-color": ["black","brown","buff","chocolate","gray","green","orange","pink","purple","red","white","yellow"],
+    "cap-color": ["brown", "buff", "cinnamon", "gray", "pink", "purple", "red", "white", "yellow"],
+    "habitat": ["grasses","leaves","meadows","paths", "urban","waste","woods"],
     "cap-shape": ["bell", "conical", "convex", "flat", "knobbed", "sunken"],
     "cap-surface": ["fibrous", "grooves", "scaly", "smooth"],
-    "cap-color": ["brown", "buff", "cinnamon", "gray", "pink", "purple", "red", "white", "yellow"],
     "bruises": ["bruises", "no"],
     "odor": ["almond", "anise", "creosote","fishy","foul", "musty","none","pungent","spicy"],
     "gill-attachment": ["attached","descending","free","notched"],
     "gill-spacing": ["lose","crowded","distant"],
     "gill-size": ["broad","narrow"],
-    "gill-color": ["black","brown","buff","chocolate","gray","green","orange","pink","purple","red","white","yellow"],
     "stalk-shape": ["enlarged","tapering"],
     "stalk-root": ["bulbous","club","cup","equal", "rhizomorphs","rooted","missing"],
     "stalk-surface-above-ring": ["fibrous","scaly","silky","smooth"],
@@ -92,9 +94,7 @@ feature_map = {
     "ring-number": ["none", "one", "two"],
     "ring-type": ["cobwebby","evanescent","flaring","large", "none","pendant","sheathing","zone"],
     "spore-print-color": ["black","brown","buff","chocolate","green", "orange","purple","white","yellow"],
-    "population": ["abundant","clustered","numerous", "scattered","several","solitary"],
-    "habitat": ["grasses","leaves","meadows","paths", "urban","waste","woods"]
-
+    "population": ["abundant","clustered","numerous", "scattered","several","solitary"]
 }
 
 DATABASE_URLS = {
@@ -115,8 +115,8 @@ DATABASE_URLS = {
 #         data.extend(response.json().values())
 #
 # dataviz_df = pd.DataFrame(data)
-#
-# #mapping dictionaries
+
+#mapping dictionaries
 mappings = {
     'cap-shape': {"bell":"b","conical":"c","convex":"x","flat":"f","knobbed":"k","sunken":"s"},
     'cap-color': {"brown":"n","buff":"b","cinnamon":"c","gray":"g","green":"r","pink":"p","purple":"u","red":"e","white":"w","yellow":"y"},
@@ -142,26 +142,34 @@ mappings = {
 
 inverted_mappings = {outer_key: {v: k for k, v in outer_value.items()} for outer_key, outer_value in mappings.items()}
 
-# def gen_hash(gillcolor, capcolor, habitat):
-#   """
-#   Returns integer value that corresponds to predefined databases based
-#   on hash number that is generated from mushroom dataset features of
-#   gill color, cap color, and habitat.
-#   """
-#   new_string = f"{gillcolor}{capcolor}{habitat}"
-#   hash_obj = hashlib.sha256(new_string.encode())
-#   hash_num = int(hash_obj.hexdigest(),16)
-#   db_id = hash_num % 8
-#   return db_id
+def gen_hash(gillcolor, capcolor, habitat):
+  """
+  Returns integer value that corresponds to predefined databases based
+  on hash number that is generated from mushroom dataset features of
+  gill color, cap color, and habitat.
+  """
+  new_string = f"{gillcolor}{capcolor}{habitat}"
+  hash_obj = hashlib.sha256(new_string.encode())
+  hash_num = int(hash_obj.hexdigest(),16)
+  db_id = hash_num % 8
+  return db_id
+
 ##################################################################
 ########################## USER INFO #############################
 ##################################################################
 current_feature_index = 0
 
-def button_click(button_label, picked_features):
-    st.write(f"Button {button_label} clicked!")
+def button_click(button_label, picked_features, current_feature, characters):
     picked_features.append(button_label)
+
+    ch = mappings[current_feature][button_label]
+    characters.append(ch)
+    print("characters: ", characters)
     print(picked_features)
+
+    if len(characters) >= 3:
+        load_df(characters)
+
 
 def selectionPanel():
     # TODO: reset when reaches 100 poisonous/edible
@@ -169,9 +177,13 @@ def selectionPanel():
         st.session_state['current_feature_index'] = 0
     if 'picked_features' not in st.session_state:
         st.session_state['picked_features'] = []
+    if 'characters' not in st.session_state:
+        st.session_state['characters'] = []
+
 
     current_feature_index = st.session_state.get("current_feature_index", 0)
     picked_features = st.session_state.get("picked_features", [])
+    characters = st.session_state.get("characters", [])
 
     restart = True
 
@@ -192,14 +204,38 @@ def selectionPanel():
             button_label = f"{i}"
             button_id = f"button_{i}"
             if st.button(button_label, key=button_id, use_container_width=True):
-                button_click(i, picked_features)
+                button_click(i, picked_features, current_feature, characters)
                 st.session_state["current_feature_index"] += 1
                 st.session_state["picked_features"] = picked_features
                 st.rerun()
+
+def load_df(picked_features):
+    print("inside load_df")
+    if len(picked_features) >= 3:
+        gillcolor = picked_features[0]
+        capcolor = picked_features[1]
+        habitat = picked_features[2]
+
+        db_id = gen_hash(gillcolor, capcolor, habitat)
+        db_url = DATABASE_URLS[db_id] + ".json"
+
+        response = requests.get(db_url)
+        data = response.json()
+        df = pd.DataFrame(data).transpose()
+
+        perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
+        # st.progress(perc_edible)
+
+    else:
+        perc_edible = 0
+        st.progress(perc_edible)
+
+    return df, perc_edible
+
 def slider():
     st.write("sider goes here")
 
-def test():
+def charts():
     if 'dataviz_df' not in st.session_state:
         data = []
         for url in DATABASE_URLS.values():
@@ -241,7 +277,7 @@ def test():
 
 if __name__ == "__main__":
     # TODO add bar chart and pie chart before selection area
-    test()
+    charts()
     slider()
     selectionPanel()
 
