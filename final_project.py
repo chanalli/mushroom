@@ -251,10 +251,14 @@ def recalculate(df, characters):
         filter_conditions = filter_conditions[filter_conditions[col] == value]
     print("filtered: ", filter_conditions)
 
+    perc_edible = len(filter_conditions[filter_conditions['poisonous'] == 'e']) / len(df)
+    print("percent edible ON FILTERED:", str(perc_edible))
+
+    st.session_state["progress_value"] = perc_edible
+    slider(progress_value)
+
     if filter_conditions.empty:
-        perc_edible = 0
-        st.session_state["progress_value"] = perc_edible
-        slider(progress_value)
+        print("its empty !! we don't have a mushroom that matches the exact characteristics")
         return;
 
 def slider(val):
