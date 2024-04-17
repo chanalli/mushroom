@@ -89,7 +89,7 @@ feature_map = {
     "stalk-surface-below-ring": ["fibrous",'scaly',"silky","smooth"],
     "stalk-color-above-ring": ["brown","buff","cinnamon","gray","orange", "pink","red","white","yellow"],
     "stalk-color-below-ring": ["brown","buff",'cinnamon',"gray","orange", "pink","red","white","yellow"],
-    "veil-type": ["paritial", "universal"],
+    "veil-type": ["partial", "universal"],
     "veil-color": ["brown","orange","white","yellow"],
     "ring-number": ["none", "one", "two"],
     "ring-type": ["cobwebby","evanescent","flaring","large", "none","pendant","sheathing","zone"],
@@ -123,7 +123,7 @@ mappings = {
     'stalk-root': {"bulbous":"b","club":"c","cup":"u","equal":"e","rhizomorphs":"z","rooted":"r","missing":"?"},
     'stalk-surface-above-ring': {"fibrous":"f","scaly":"y","silky":"k","smooth":"s"},
     'stalk-surface-below-ring': {"fibrous":"f","scaly":"y","silky":"k","smooth":"s"},
-    'stalk-color-above-ring' : {"brown":"n","buff":"b","cinnamon":"c","gray":"g","orange":"o", "pink":"p","red":"e","white":"W","yellow":"y"},
+    'stalk-color-above-ring' : {"brown":"n","buff":"b","cinnamon":"c","gray":"g","orange":"o", "pink":"p","red":"e","white":"w","yellow":"y"},
     'stalk-color-below-ring': {"brown":"n","buff":"b","cinnamon":"c","gray":"g","orange":"o", "pink":"p","red":"e","white":"w","yellow":"y"},
     'veil-type': {"partial":"p","universal":"u"},
     'veil-color': {"brown":"n","orange":"o","white":"w","yellow":"y"},
@@ -133,6 +133,7 @@ mappings = {
     'population': {"abundant":"a","clustered":"c","numerous":"n","scattered":"s","several":"v","solitary":"y"},
     'habitat': {"grasses":"g","leaves":"l","meadows":"m","paths":"p","urban":"u","waste":"w","woods":"d"}
 }
+
 
 inverted_mappings = {outer_key: {v: k for k, v in outer_value.items()} for outer_key, outer_value in mappings.items()}
 
@@ -172,42 +173,66 @@ def button_click(button_label, picked_features, current_feature, characters):
 
 
 def selectionPanel():
-    # TODO: reset when reaches 100 poisonous/edible
     if 'current_feature_index' not in st.session_state:
         st.session_state['current_feature_index'] = 0
     if 'picked_features' not in st.session_state:
         st.session_state['picked_features'] = []
     if 'characters' not in st.session_state:
         st.session_state['characters'] = []
+    if 'data_exists' not in st.session_state:
+        st.session_state['data_exists'] = True
+    if 'show_restart' in st.session_state:
+        st.write(f"{st.session_state['show_restart']}")
+        if st.button("Start Over"):
+            st.session_state["current_feature_index"] = 0
+            st.session_state["picked_features"] = []
+            st.session_state["characters"] = []
+            st.session_state['data_exists'] = True
+            st.session_state['progress_value'] = None
+            st.session_state.pop('show_restart', None)
+            st.rerun()
+        return
 
 
     current_feature_index = st.session_state.get("current_feature_index", 0)
     picked_features = st.session_state.get("picked_features", [])
     characters = st.session_state.get("characters", [])
 
-    restart = True
-
-    if current_feature_index >= len(feature_map):
-        st.write(f"<h2 style='text-align: center;'>your mushroom is: </h2>", unsafe_allow_html=True)
-        restart = st.button("Start over")
-        st.session_state["current_feature_index"] = 0
-        st.session_state["picked_features"] = []
+    if not st.session_state['data_exists']:
+        st.write("Unfortunately, no mushroom matches the selected characteristics.")
+        if st.button("Start Over"):
+            st.session_state["current_feature_index"] = 0
+            st.session_state["picked_features"] = []
+            st.session_state["characters"] = []
+            st.session_state['data_exists'] = True
+            st.session_state['progress_value'] = None
+            st.rerun()
         return
 
-    if restart:
-        current_feature = list(feature_map.keys())[current_feature_index]
-        st.write(f"<h2 style='text-align: center;'>pick one of the following characteristics</h2>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='text-align: center;'>{current_feature}</h3>", unsafe_allow_html=True)
+    if current_feature_index >= len(feature_map):
+        st.write(f"<h2 style='text-align: center;'>Your mushroom is:</h2>", unsafe_allow_html=True)
+        if st.button("Start over"):
+            st.session_state["current_feature_index"] = 0
+            st.session_state["picked_features"] = []
+            st.session_state["characters"] = []
+            st.session_state['progress_value'] = None
+            st.rerun()
+        return
 
-        # "before", st.session_state
-        for i in feature_map[current_feature]:
-            button_label = f"{i}"
-            button_id = f"button_{i}"
-            if st.button(button_label, key=button_id, use_container_width=True):
-                button_click(i, picked_features, current_feature, characters)
-                st.session_state["current_feature_index"] += 1
-                st.session_state["picked_features"] = picked_features
-                st.rerun()
+    current_feature = list(feature_map.keys())[current_feature_index]
+    st.write(f"<h2 style='text-align: center;'>Pick one of the following characteristics:</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='text-align: center;'>{current_feature}</h3>", unsafe_allow_html=True)
+
+    for i in feature_map[current_feature]:
+        button_label = f"{i}"
+        button_id = f"button_{i}"
+        if st.button(button_label, key=button_id, use_container_width=True):
+            button_click(i, picked_features, current_feature, characters)
+            st.session_state["current_feature_index"] += 1
+            st.session_state["picked_features"] = picked_features
+            st.rerun()
+
+
 
 def load_df(characters, current_feature):
     print("inside load_df")
@@ -251,21 +276,39 @@ def recalculate(df, characters):
         filter_conditions = filter_conditions[filter_conditions[col] == value]
     print("filtered: ", filter_conditions)
 
-    perc_edible = len(filter_conditions[filter_conditions['poisonous'] == 'e']) / len(df)
+    if filter_conditions.empty or len(filter_conditions) == 0:
+        st.session_state['data_exists'] = False
+        return;
+
+    perc_edible = len(filter_conditions[filter_conditions['poisonous'] == 'e']) / len(filter_conditions) if len(filter_conditions) > 0 else 0
     print("percent edible ON FILTERED:", str(perc_edible))
 
+    #update progress bar to reflect current state
     st.session_state["progress_value"] = perc_edible
-    slider(progress_value)
+    slider(perc_edible)
 
-    if filter_conditions.empty:
-        print("its empty !! we don't have a mushroom that matches the exact characteristics")
-        return;
+    if perc_edible == 1.0:
+        st.session_state['show_restart'] = "According to our data, such mushrooms are edible. But, still try at your own caution..."
+    elif perc_edible == 0.0:
+        st.session_state['show_restart'] = "Such mushrooms are poisonous. Avoid!"
+
 
 def slider(val):
     print("val for slider:", str(val))
-    st.write(f"<h3 style='text-align: center;'>edible vs poisonous</h3>", unsafe_allow_html=True)
-    progress_bar = st.progress(val)
+    
+    if val is None:
+        val = 0.0
+        perc_edible = val
+        perc_poisonous = val
+    else:
+        perc_edible = val * 100
+        perc_poisonous = 100 - perc_edible
 
+    st.write(f"<h3 style='text-align: left;'>{perc_edible:.2f}% Edible</h3>", unsafe_allow_html=True)
+    st.progress(val)
+    st.write(f"<h3 style='text-align: right;'>{perc_poisonous:.2f}% Poisonous</h3>", unsafe_allow_html=True)
+    
+    
 def charts():
     if 'dataviz_df' not in st.session_state:
         data = []
@@ -306,6 +349,7 @@ def charts():
         fig_bar.update_layout(barmode='group', xaxis_title=feature.capitalize(), yaxis_title='Count', legend_title='Edibility')
         st.plotly_chart(fig_bar, use_container_width=True, align="center")
 
+
 def starburst():
     dataviz_df = st.session_state['dataviz_df']
 
@@ -329,7 +373,7 @@ def starburst():
 
 if __name__ == "__main__":
     if 'progress_value' not in st.session_state:
-        st.session_state['progress_value'] = 0
+        st.session_state['progress_value'] = None
 
     progress_value = st.session_state.get("progress_value", 0)
 
