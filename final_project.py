@@ -294,7 +294,7 @@ def starburst():
     #sunburst diagram for hashing function
     fig = px.sunburst(
         dataviz_df,
-        path=[dataviz_df['gill-color'].map(inverted_mappings['gill-color']), dataviz_df['cap-color'].map(inverted_mappings['cap-color']), dataviz_df['habitat'].map(inverted_mappings['habitat'])],
+        path=[dataviz_df['gill-color'], dataviz_df['cap-color'], dataviz_df['habitat']],
         color='poisonous',
         color_discrete_map={'e': 'lightgreen', 'p': 'red'},
         title='Gill-Color, Cap-Color, Habitat Sunburst Diagram',
@@ -304,7 +304,7 @@ def starburst():
     fig.update_layout(
         width=800,
         height=600,
-        )
+    )
 
     #streamlit to display
     st.plotly_chart(fig, use_container_width=True)
