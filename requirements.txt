@@ -1,1 +1,2 @@
 plotly==23.2.1
+plotly-express==23.2.1
