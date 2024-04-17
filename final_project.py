@@ -120,7 +120,7 @@ mappings = {
     'gill-size':{"broad":"b","narrow":"n"},
     'gill-color':{"black":"k","brown":"n","buff":"b","chocolate":"h","gray":"g","green":"r","orange":"o","pink":"p","purple":"u","red":"e","white":"w","yellow":"y"},
     'stalk-shape': {"enlarging":"e","tapering":"t"},
-    'stalk-root': {"bulbous":"b","club":"c","cup":"u","equal":"e","rhizomorphs":"r","zooted":"r","missing":"?"},
+    'stalk-root': {"bulbous":"b","club":"c","cup":"u","equal":"e","rhizomorphs":"z","rooted":"r","missing":"?"},
     'stalk-surface-above-ring': {"fibrous":"f","scaly":"y","silky":"k","smooth":"s"},
     'stalk-surface-below-ring': {"fibrous":"f","scaly":"y","silky":"k","smooth":"s"},
     'stalk-color-above-ring' : {"brown":"n","buff":"b","cinnamon":"c","gray":"g","orange":"o", "pink":"p","red":"e","white":"W","yellow":"y"},
