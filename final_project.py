@@ -279,18 +279,6 @@ def charts():
         fig_bar.update_layout(barmode='group', xaxis_title=feature.capitalize(), yaxis_title='Count', legend_title='Edibility')
         st.plotly_chart(fig_bar, use_container_width=True, align="center")
 
-def starburst():
-    if 'dataviz_df' not in st.session_state:
-        data = []
-        for url in DATABASE_URLS.values():
-            response = requests.get(f"{url}.json")
-            if response.status_code == 200:
-                data.extend(response.json().values())
-
-        st.session_state['dataviz_df'] = pd.DataFrame(data)
-
-    dataviz_df = st.session_state['dataviz_df']
-
     #sunburst diagram for hashing function
     fig = px.sunburst(
         dataviz_df,
@@ -309,6 +297,20 @@ def starburst():
     #streamlit to display
     st.plotly_chart(fig, use_container_width=True)
 
+# def starburst():
+#     if 'dataviz_df' not in st.session_state:
+#         data = []
+#         for url in DATABASE_URLS.values():
+#             response = requests.get(f"{url}.json")
+#             if response.status_code == 200:
+#                 data.extend(response.json().values())
+#
+#         st.session_state['dataviz_df'] = pd.DataFrame(data)
+#
+#     dataviz_df = st.session_state['dataviz_df']
+
+
+
 if __name__ == "__main__":
     charts()
     st.markdown("<br>", unsafe_allow_html=True)
@@ -321,7 +323,7 @@ if __name__ == "__main__":
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    starburst()
+    # starburst()
 
 
 # Footer
