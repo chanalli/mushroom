@@ -81,7 +81,7 @@ feature_map = {
     "bruises": ["True", "False"],
     "odor": ["almond", "anise", "creosote","fishy","foul", "musty","none","pungent","spicy"],
     "gill-attachment": ["attached","descending","free","notched"],
-    "gill-spacing": ["lose","crowded","distant"],
+    "gill-spacing": ["close","crowded","distant"],
     "gill-size": ["broad","narrow"],
     "stalk-shape": ["enlarging","tapering"],
     "stalk-root": ["bulbous","club","cup","equal", "rhizomorphs","rooted","missing"],
@@ -312,7 +312,7 @@ def starburst():
     #sunburst diagram for hashing function
     fig = px.sunburst(
         dataviz_df,
-        path=[dataviz_df['gill-color'], dataviz_df['cap-color'], dataviz_df['habitat']],
+        path=[dataviz_df['gill-color'].map(inverted_mappings['gill-color']), dataviz_df['cap-color'].map(inverted_mappings['cap-color']), dataviz_df['habitat'].map(inverted_mappings['habitat'])],
         color='poisonous',
         color_discrete_map={'e': 'lightgreen', 'p': 'red'},
         title='Gill-Color, Cap-Color, Habitat Sunburst Diagram',
