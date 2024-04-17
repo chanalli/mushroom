@@ -161,8 +161,14 @@ def button_click(button_label, picked_features, current_feature, characters):
     print("characters: ", characters)
     print(picked_features)
 
-    if len(characters) >= 3:
-        load_df(characters)
+    if len(characters) == 3:
+        if 'df' not in st.session_state:
+            st.session_state['df'] = load_df(characters, current_feature)
+        else:
+            st.session_state["df"] = load_df(characters, current_feature)
+    if len(characters) > 3:
+        retrieved_df = st.session_state['df']
+        recalculate(retrieved_df, characters)
 
 
 def selectionPanel():
@@ -203,32 +209,53 @@ def selectionPanel():
                 st.session_state["picked_features"] = picked_features
                 st.rerun()
 
-def load_df(picked_features):
-    if len(picked_features) >= 3:
-        gillcolor = picked_features[0]
-        capcolor = picked_features[1]
-        habitat = picked_features[2]
+def load_df(characters, current_feature):
+    print("inside load_df")
+    progress_value = st.session_state.get("progress_value", 0)
+    if len(characters) >= 3:
+        gillcolor = characters[0]
+        capcolor = characters[1]
+        habitat = characters[2]
 
         db_id = gen_hash(gillcolor, capcolor, habitat)
+        print("db id: ", db_id);
         db_url = DATABASE_URLS[db_id] + ".json"
 
         response = requests.get(db_url)
         data = response.json()
         df = pd.DataFrame(data).transpose()
+        print(df)
 
         perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
-        # st.progress(perc_edible)
-        print(perc_edible)
+        print("percent edible:", str(perc_edible))
+
         st.session_state["progress_value"] = perc_edible
-        progress_value = st.session_state.get("progress_value", 0)
         slider(progress_value)
 
     else:
         perc_edible = 0
         st.session_state["progress_value"] = perc_edible
-        progress_bar.progress(progress_value)
+        slider(progress_value)
 
-    return df, perc_edible
+    return df
+
+def recalculate(df, characters):
+    print("inside recalculate")
+    dict = {}
+    for index, char in enumerate(characters):
+        dict[list(feature_map.keys())[index]] = char
+    print(dict)
+
+    filter_conditions = df.copy()
+    for col, value in dict.items():
+        filter_conditions = filter_conditions[filter_conditions[col] == value]
+    print("filtered: ", filter_conditions)
+
+    if filter_conditions.empty:
+        perc_edible = 0
+        st.session_state["progress_value"] = perc_edible
+        slider(progress_value)
+        return;
 
 def slider(val):
     print("val for slider:", str(val))
