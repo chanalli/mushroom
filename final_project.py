@@ -280,15 +280,6 @@ def charts():
         st.plotly_chart(fig_bar, use_container_width=True, align="center")
 
 def starburst():
-    # if 'dataviz_df' not in st.session_state:
-    #     data = []
-    #     for url in DATABASE_URLS.values():
-    #         response = requests.get(f"{url}.json")
-    #         if response.status_code == 200:
-    #             data.extend(response.json().values())
-    #
-    #     st.session_state['dataviz_df'] = pd.DataFrame(data)
-
     dataviz_df = st.session_state['dataviz_df']
 
     #sunburst diagram for hashing function
