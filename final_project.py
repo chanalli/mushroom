@@ -60,8 +60,8 @@ section_1 = """
         <p>🌷 Mushroom identification is a website where you can interactively select charateristics of a
             mushroom and it will be able to tell you if it is poisonous or edible. Moreover, it will also
             predict the outcome as you select each feature.</p>
-        <p>🍀 You can also by viewing the different charts TODO (bar chart of characteristics)</p>
-        <p>🌸 The data comes from here: </p>
+        <p>🍀 You can also view the characteristics through the pie chart, bar chart, and sunburst chart below</p>
+        <p>🌸 The data comes from here: <a href="https://archive.ics.uci.edu/dataset/73/mushroom" target="_blank">https://archive.ics.uci.edu/dataset/73/mushroom</a></p>
     <div>
 """
 st.markdown(section_1, unsafe_allow_html=True)
@@ -78,7 +78,7 @@ feature_map = {
     "habitat": ["grasses","leaves","meadows","paths", "urban","waste","woods"],
     "cap-shape": ["bell", "conical", "convex", "flat", "knobbed", "sunken"],
     "cap-surface": ["fibrous", "grooves", "scaly", "smooth"],
-    "bruises": ["bruises", "no"],
+    "bruises": ["True", "False"],
     "odor": ["almond", "anise", "creosote","fishy","foul", "musty","none","pungent","spicy"],
     "gill-attachment": ["attached","descending","free","notched"],
     "gill-spacing": ["lose","crowded","distant"],
@@ -157,7 +157,7 @@ def gen_hash(gillcolor, capcolor, habitat):
 ##################################################################
 ########################## USER INFO #############################
 ##################################################################
-current_feature_index = 0
+# current_feature_index = 0
 
 def button_click(button_label, picked_features, current_feature, characters):
     picked_features.append(button_label)
@@ -225,15 +225,19 @@ def load_df(picked_features):
 
         perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
         # st.progress(perc_edible)
+        print(perc_edible)
+        slider(perc_edible)
 
     else:
         perc_edible = 0
-        st.progress(perc_edible)
+        progress_bar.progress(perc_edible)
 
     return df, perc_edible
 
-def slider():
-    st.write("sider goes here")
+def slider(val):
+    print("val for slider:", str(val))
+    st.write(f"<h3 style='text-align: center;'>edible vs poisonous</h3>", unsafe_allow_html=True)
+    progress_bar = st.progress(val)
 
 def charts():
     if 'dataviz_df' not in st.session_state:
@@ -275,12 +279,50 @@ def charts():
         fig_bar.update_layout(barmode='group', xaxis_title=feature.capitalize(), yaxis_title='Count', legend_title='Edibility')
         st.plotly_chart(fig_bar, use_container_width=True, align="center")
 
+def starburst():
+    if 'dataviz_df' not in st.session_state:
+        data = []
+        for url in DATABASE_URLS.values():
+            response = requests.get(f"{url}.json")
+            if response.status_code == 200:
+                data.extend(response.json().values())
+
+        st.session_state['dataviz_df'] = pd.DataFrame(data)
+
+    dataviz_df = st.session_state['dataviz_df']
+
+    #sunburst diagram for hashing function
+    fig = px.sunburst(
+        dataviz_df,
+        path=[dataviz_df['gill-color'].map(inverted_mappings['gill-color']), dataviz_df['cap-color'].map(inverted_mappings['cap-color']), dataviz_df['habitat'].map(inverted_mappings['habitat'])],
+        color='poisonous',
+        color_discrete_map={'e': 'lightgreen', 'p': 'red'},
+        title='Gill-Color, Cap-Color, Habitat Sunburst Diagram',
+        labels={'e': 'Edible', 'p': 'Poisonous'}
+    )
+
+    fig.update_layout(
+        width=800,
+        height=600,
+        )
+
+    #streamlit to display
+    st.plotly_chart(fig, use_container_width=True)
+
 if __name__ == "__main__":
     # TODO add bar chart and pie chart before selection area
     charts()
-    slider()
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    slider(28)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     selectionPanel()
-
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    starburst()
 
 
 # Footer
