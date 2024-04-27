@@ -257,7 +257,7 @@ def load_df(characters, current_feature):
         df = df[condition1 & condition2 & condition3]
         
         if len(df) == 0:
-            st.session_state['show_restart'] = "According to our data, such mushrooms do not exist. Pleae restart/"
+            st.session_state['show_restart'] = "Unfortunately, no mushroom matches the selected characteristics. Please restart."
         else:
              
             perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
