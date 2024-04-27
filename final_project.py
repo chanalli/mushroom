@@ -250,12 +250,27 @@ def load_df(characters, current_feature):
         data = response.json()
         df = pd.DataFrame(data).transpose()
         print(df)
+        
+        condition1 = (df['gill-color']== gillcolor)
+        condition2 = (df['cap-color']== capcolor)
+        condition3 = (df['habitat']== habitat)
+        df = df[condition1 & condition2 & condition3]
+        
+        if len(df) == 0:
+            st.session_state['show_restart'] = "According to our data, such mushrooms do not exist. Pleae restart/"
+        else:
+             
+            perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
+            print("percent edible:", str(perc_edible))
 
-        perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
-        print("percent edible:", str(perc_edible))
-
-        st.session_state["progress_value"] = perc_edible
-        slider(progress_value)
+            st.session_state["progress_value"] = perc_edible
+            slider(progress_value)
+        
+        
+            if perc_edible == 1.0:
+                st.session_state['show_restart'] = "According to our data, such mushrooms are edible. But, still try at your own caution..."
+            elif perc_edible == 0.0:
+                st.session_state['show_restart'] = "Such mushrooms are poisonous. Avoid!"
 
     else:
         perc_edible = 0
