@@ -350,7 +350,8 @@ def charts():
         fig_pie.update_layout(title_text='Distribution of Mushrooms by Edibility', title_font=dict(size=20))
         st.plotly_chart(fig_pie, use_container_width=True, align="center")
     with col2: # BAR CHART
-        feature = st.selectbox('Choose a feature variable:', options=dataviz_df.columns, index=dataviz_df.columns.get_loc('cap-shape'))
+        options = dataviz_df.columns.drop('poisonous')
+        feature = st.selectbox('Choose a feature variable:', options=options, index=dataviz_df.columns.get_loc('cap-shape'))
 
         color_discrete = {'e': 'lightgreen', 'p': 'red'}
         plot_feature = dataviz_df[feature].map(inverted_mappings[feature]) if feature in inverted_mappings else dataviz_df[feature]
