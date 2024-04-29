@@ -232,61 +232,11 @@ def selectionPanel():
             st.session_state["picked_features"] = picked_features
             st.rerun()
 
-
-
-#def load_df(characters, current_feature):
-#    print("inside load_df")
-#    progress_value = st.session_state.get("progress_value", 0)
-#    if len(characters) >= 3:
-#        gillcolor = characters[0]
-#        capcolor = characters[1]
-#        habitat = characters[2]
-#
-#        db_id = gen_hash(gillcolor, capcolor, habitat)
-#        print("db id: ", db_id);
-#        db_url = DATABASE_URLS[db_id] + ".json"
-#
-#        response = requests.get(db_url)
-#        data = response.json()
-#        df = pd.DataFrame(data).transpose()
-#        print(df)
-#        
-#        condition1 = (df['gill-color']== gillcolor)
-#        condition2 = (df['cap-color']== capcolor)
-#        condition3 = (df['habitat']== habitat)
-#        df = df[condition1 & condition2 & condition3]
-#        
-#        if len(df) == 0:
-#            st.session_state['show_restart'] = "Unfortunately, no mushroom matches the selected characteristics. Please restart."
-#        else:
-#             
-#            perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
-#            print("percent edible:", str(perc_edible))
-#
-#            st.session_state["progress_value"] = perc_edible
-#            slider(progress_value)
-#        
-#        
-#            if perc_edible == 1.0:
-#                st.session_state['show_restart'] = "According to our data, such mushrooms are edible. But, still try at your own caution..."
-#            elif perc_edible == 0.0:
-#                st.session_state['show_restart'] = "Such mushrooms are poisonous. Avoid!"
-#
-#    else:
-#        perc_edible = 0
-#        st.session_state["progress_value"] = perc_edible
-#        slider(progress_value)
-#
-#    return df
-
-import requests
-import pandas as pd
-
 def load_df(characters, current_feature):
     print("inside load_df")
     df = pd.DataFrame()
     progress_value = st.session_state.get("progress_value", 0)
-    if len(characters) >= 3:
+    if len(characters) == 3:
         gillcolor, capcolor, habitat = characters[0], characters[1], characters[2]
 
         db_id = gen_hash(gillcolor, capcolor, habitat)
@@ -309,7 +259,7 @@ def load_df(characters, current_feature):
                     perc_edible = len(df[df['poisonous'] == 'e']) / len(df)
                     print("percent edible:", str(perc_edible))
                     st.session_state["progress_value"] = perc_edible
-                    slider(progress_value)  # Assuming this updates a progress bar
+                    slider(progress_value)
 
                     if perc_edible == 1.0:
                         st.session_state['show_restart'] = "According to our data, such mushrooms are edible. But, still try at your own caution..."
