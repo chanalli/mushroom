@@ -133,8 +133,17 @@ def delete_data():
     db_id = int(input("Enter the database ID: "))
     index = input("Enter the index of the data to delete: ")
     url = f"{DATABASE_URLS[db_id]}/{index}.json"
-    response = requests.delete(url)
-    print("Data deleted, status code:", response.status_code)
+    
+    response = requests.get(url)
+    if response.status_code == 200 and response.json() is not None:
+        #data exists, proceed to delete
+        del_response = requests.delete(url)
+        if del_response.status_code == 200:
+            print("Data successfully deleted.")
+        else:
+            print("Failed to delete data, status code:", del_response.status_code)
+    else:
+        print("Data not found at the specified index, nothing to delete.")
 
 def read_data():
     """
