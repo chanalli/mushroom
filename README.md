@@ -42,5 +42,5 @@ Streamlit: In order to view content of final_project.py, please visit https://mu
 
 Data Base Manager:
 1. From the cloned repository directory as the root with the virtual environment actiivated, from the command line, run “python3 database_backend_mushroom.py”
-2. Please follow instructions show in command line terminal to run CRUD operations.
+2. Please follow instructions shown in command line terminal to run CRUD operations.
 
