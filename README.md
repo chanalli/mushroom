@@ -15,7 +15,7 @@ To run this project:
 7. Create 8 additional databases (only available with Blaze plan) and repeat step 5 for each.
 8. Open “distribute_data.py” in a text editor and change the URLs in the dictionary labeled “DATABASE_URLS” with those created in step 7 and save.
 9. Repeat step 8 for file “final_project.py”
-10.. Repeat step 8 for file “database_backend_mushroom.py” and also update “firebase_url” with the link to the default Firebase databse created in step 5 with “.json” added to the end of the reference url.
+10. Repeat step 8 for file “database_backend_mushroom.py” and also update “firebase_url” with the link to the default Firebase databse created in step 5 with “.json” added to the end of the reference url.
 11. From the cloned repository direcotry as the root and virtual environment activated, from the command line, run “distribute_data.py”; this will populate the databases created in step 7 via a hashing function and requests library utilizing the Firebase REST API. Check Firebase console to confirm population.
 12. From the Firebase console, for each database created in step 7, change the “Rules” to as follows and hit publish:
 {
