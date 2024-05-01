@@ -22,23 +22,23 @@ To run this project:
     ".indexOn": ["bruises", "cap-color", "cap-shape", "cap-surface", "gill-attachment", "gill-color", "gill-size", "gill-spacing", "habitat", "odor", "poisonous", "population", "ring-number", "ring-type", "spore-print-color", "stalk-color-above-ring", "stalk-color-below-ring", "stalk-root", "stalk-shape", "stalk-surface-above-ring", "stalk-surface-below-ring", "veil-color", "veil-type"]
   }
 }
-13. Push to repository to deploy on streamlit. Make sure your have an account on Steamlit, and it is connected to our github. 
+13. Push repository to github to deploy on streamlit. Make sure your have an account on Steamlit, and it is connected to pushed github. 
 
 
 Files Included:
-1. final_project.py
+1. final_project.py<br>
   This is where the streamlit website is being displayed. 
-2. database_backend_mushroom.py
+2. database_backend_mushroom.py<br>
   This file is used by the database manager to run CRUD operations.
-3. distribute_data.py
+3. distribute_data.py<br>
   This file is used for the initial upload of our data to our databases. 
-4. mushroom-default-rtdb-export.json
+4. mushroom-default-rtdb-export.json<br>
   This file is used in step 6 of how to run this project providing key mapping information for attributes names and values.
-5. requirements.txt
+5. requirements.txt<br>
   This file is used to install necessary depenedencies to run project in virtual environment.
 
 Front End:
-Stremlit: In order to view content of final_project.py, please visit https://mushroom-identification.streamlit.app/.
+Streamlit: In order to view content of final_project.py, please visit https://mushroom-identification.streamlit.app/.
 
 Data Base Manager:
 1. From the cloned repository directory as the root with the virtual environment actiivated, from the command line, run “python3 database_backend_mushroom.py”
