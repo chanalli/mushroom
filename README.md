@@ -1,10 +1,7 @@
-Add readMe file which should have commands to run your program and also describe the file structure (Description of directories and what each file does).
+Allison Chan (6905922727)
+Brandyn K. Lee (2422176714)
+Eric Crouse (9271913867)
 
-TODO: 
-1. confirm/update what each file does
-2. write commands/requirements to run database manager
-
------------------------------------------------------------------------------
 To run this project:
 1. Clone this repository.
 2. Create virtual environment to install dependencies for project and activate it.
@@ -25,13 +22,8 @@ To run this project:
     ".indexOn": ["bruises", "cap-color", "cap-shape", "cap-surface", "gill-attachment", "gill-color", "gill-size", "gill-spacing", "habitat", "odor", "poisonous", "population", "ring-number", "ring-type", "spore-print-color", "stalk-color-above-ring", "stalk-color-below-ring", "stalk-root", "stalk-shape", "stalk-surface-above-ring", "stalk-surface-below-ring", "veil-color", "veil-type"]
   }
 }
-13. ??? Launch streamlit blah blah blah
+13. Push to repository to deploy on streamlit. Make sure your have an account on Steamlit, and it is connected to our github. 
 
-
-
-Allison Chan (6905922727)
-Brandyn K. Lee (2422176714)
-Eric Crouse (9271913867)
 
 Files Included:
 1. final_project.py
