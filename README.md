@@ -8,7 +8,7 @@ To run this project:
 3. From the cloned repository directory, install the requirements found in requirements.txt using “pip install -r requirements.txt”
 4. Create new project on Firebase console. Under the “Build” drop-down menu, select “Realtime Database.”
 5. On the Firebase console, go to the “Rules” tab under the Realtime Database created in step 4. Edit all “false” values to “true and click “Publish.” 
-6. Go tthe “Data” tab and click on the icon with three vertical dots and select “IMPORT JSON.”  Select the “mushroom-default-rtdb-export.json” from the cloned repository.
+6. Go tthe “Data” tab and click on the icon with three vertical dots and select “IMPORT JSON.”  Select the "mushroom-default-rtdb-import.json” from the cloned repository.
 7. Create 8 additional databases (only available with Blaze plan) and repeat step 5 for each.
 8. Open “distribute_data.py” in a text editor and change the URLs in the dictionary labeled “DATABASE_URLS” with those created in step 7 and save.
 9. Repeat step 8 for file “final_project.py”
@@ -32,7 +32,7 @@ Files Included:
   This file is used by the database manager to run CRUD operations.
 3. distribute_data.py<br>
   This file is used for the initial upload of our data to our databases. 
-4. mushroom-default-rtdb-export.json<br>
+4. mushroom-default-rtdb-import.json<br>
   This file is used in step 6 of how to run this project providing key mapping information for attributes names and values.
 5. requirements.txt<br>
   This file is used to install necessary depenedencies to run project in virtual environment.
