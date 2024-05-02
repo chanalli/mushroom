@@ -36,6 +36,8 @@ Files Included:
   This file is used in step 6 of how to run this project providing key mapping information for attributes names and values.
 5. requirements.txt<br>
   This file is used to install necessary depenedencies to run project in virtual environment.
+6. Final Project Write Up.pdf<br>
+   Written report detailing methodologies, implementation, etc.
 
 Front End:
 Streamlit: In order to view content of final_project.py, please visit https://mushroom-identification.streamlit.app/.
